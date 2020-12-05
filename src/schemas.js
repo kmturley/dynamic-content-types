@@ -20,7 +20,7 @@ function getSchema(schemaId, versionId) {
   if (!schemas[schemaId].versions[versionId]) {
     return `${schemaId} version ${versionId} does not exist`;
   }
-  return JSON.stringify(schemas[schemaId].versions[versionId], null, 2);
+  return schemas[schemaId].versions[versionId];
 }
 
 function saveSchema(schemaId, versionId, schema) {
@@ -36,7 +36,7 @@ function saveSchema(schemaId, versionId, schema) {
   if (!schemas[schemaId].versions[versionId]) {
     schemas[schemaId].versions[versionId] = schema;
   }
-  return JSON.stringify(schemas, null, 2);
+  return schemas;
 }
 
 module.exports = { deleteSchema, getSchema, saveSchema };
