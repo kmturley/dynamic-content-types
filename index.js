@@ -1,3 +1,4 @@
+const Ajv = require('ajv');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
@@ -29,6 +30,9 @@ function getSchema(schemaId, versionId) {
 
 function saveSchema(schemaId, versionId, schema) {
   console.log('saveSchema', schemaId, versionId, schema);
+  // check if the schema compiles
+  const ajv = new Ajv();
+  ajv.compile(schema);
   if (!schemas[schemaId]) {
     schemas[schemaId] = {
       versions: {}
