@@ -4,30 +4,14 @@ const contents = {};
 
 function deleteContent(schemaId, versionId, contentId) {
   console.log('deleteContent', schemaId, versionId, contentId);
-  if (!contents[schemaId]) {
-    return `${schemaId} does not exist`;
-  }
-  if (!contents[schemaId].versions[versionId]) {
-    return `${schemaId} version ${versionId} does not exist`;
-  }
-  if (!contents[schemaId].versions[versionId].content[contentId]) {
-    return `${schemaId} version ${versionId} content ${contentId} does not exist`;
-  }
-  delete contents[schemaId].versions[versionId].content[contentId];
+  const exists = existsContent(schemaId, versionId, contentId);
+  return exists == true ? delete contents[schemaId].versions[versionId].content[contentId] : exists;
 }
 
 function getContent(schemaId, versionId, contentId) {
   console.log('getContent', schemaId, versionId, contentId);
-  if (!contents[schemaId]) {
-    return `${schemaId} does not exist`;
-  }
-  if (!contents[schemaId].versions[versionId]) {
-    return `${schemaId} version ${versionId} does not exist`;
-  }
-  if (!contents[schemaId].versions[versionId].content[contentId]) {
-    return `${schemaId} version ${versionId} content ${contentId} does not exist`;
-  }
-  return contents[schemaId].versions[versionId].content[contentId];
+  const exists = existsContent(schemaId, versionId, contentId);
+  return exists == true ? contents[schemaId].versions[versionId].content[contentId] : exists;
 }
 
 function saveContent(schemaId, versionId, contentId, content) {
@@ -40,20 +24,34 @@ function saveContent(schemaId, versionId, contentId, content) {
     console.error(validate.errors);
     return validate.errors;
   }
-  if (!contents[schemaId]) {
+  if (existsContent(schemaId) !== true) {
     contents[schemaId] = {
       versions: {}
     }
   }
-  if (!contents[schemaId].versions[versionId]) {
+  if (existsContent(schemaId, versionId) !== true) {
     contents[schemaId].versions[versionId] = {
       content: {}
     };
   }
-  if (!contents[schemaId].versions[versionId].content[contentId]) {
+  if (existsContent(schemaId, versionId, contentId) !== true) {
     contents[schemaId].versions[versionId].content[contentId] = content;
   }
   return contents;
 }
 
-module.exports = { deleteContent, getContent, saveContent };
+function existsContent(schemaId, versionId, contentId) {
+  console.log('existsContent', schemaId, versionId, contentId);
+  if (schemaId && !contents[schemaId]) {
+    return { message: `${schemaId} schema does not exist` };
+  }
+  if (schemaId && contents[schemaId] && versionId && !contents[schemaId].versions[versionId]) {
+    return { message: `${schemaId} schema, version ${versionId} does not exist` };
+  }
+  if (schemaId && contents[schemaId] && versionId && contents[schemaId].versions[versionId] && contentId && !contents[schemaId].versions[versionId].content[contentId]) {
+    return { message: `${schemaId} schema, version ${versionId}, content ${contentId} does not exist` };
+  }
+  return true;
+}
+
+module.exports = { deleteContent, getContent, saveContent, existsContent };
